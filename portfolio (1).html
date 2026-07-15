@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wajiha Batool — Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+
+  /* ============================================================
+     DESIGN TOKENS — change the whole look by editing these.
+     ============================================================ */
+  :root{
+    --bg:            #0B1120;
+    --bg-panel:      #121B2E;
+    --bg-panel-2:    #16213A;
+    --line:          #263349;
+    --line-soft:     #1B2740;
+    --text:          #E7ECF3;
+    --text-dim:      #8B97AF;
+    --text-faint:    #5B6981;
+    --accent:        #F2A93B;   /* amber — "flagged / attention" */
+    --accent-soft:   rgba(242,169,59,0.12);
+    --ok:            #57B36C;   /* "secure / deployed" green */
+    --ok-soft:       rgba(87,179,108,0.12);
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Inter', sans-serif;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  a{ color:inherit; text-decoration:none; }
+  ::selection{ background:var(--accent); color:#0B1120; }
+
+  /* subtle blueprint grid backdrop */
+  .grid-bg{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(var(--line-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+    background-size:48px 48px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
+    opacity:0.5;
+  }
+
+  .wrap{ max-width:1040px; margin:0 auto; padding:0 28px; position:relative; z-index:1; }
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    background:rgba(11,17,32,0.85); backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar-inner{
+    max-width:1040px; margin:0 auto; padding:16px 28px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .brand{ font-family:var(--mono); font-weight:600; font-size:14px; letter-spacing:0.5px; }
+  .brand span{ color:var(--accent); }
+  .nav{ display:flex; gap:28px; font-family:var(--mono); font-size:13px; color:var(--text-dim); }
+  .nav a:hover{ color:var(--accent); }
+  .status-pill{
+    display:flex; align-items:center; gap:7px;
+    font-family:var(--mono); font-size:11px; color:var(--ok);
+    border:1px solid var(--line); padding:5px 10px; border-radius:20px;
+  }
+  .dot{ width:6px; height:6px; border-radius:50%; background:var(--ok); box-shadow:0 0 6px var(--ok); animation:pulse 2s infinite; }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0.35;} }
+  @media (max-width:720px){ .nav{ display:none; } }
+
+  /* ---------- hero ---------- */
+  .hero{
+    min-height:100vh; display:flex; flex-direction:column; justify-content:center;
+    padding-top:90px; padding-bottom:60px; position:relative;
+  }
+  .eyebrow{
+    font-family:var(--mono); font-size:12px; color:var(--accent);
+    letter-spacing:2px; text-transform:uppercase; margin-bottom:18px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{ content:'>'; color:var(--text-faint); }
+  h1.name{
+    font-family:var(--mono); font-weight:700;
+    font-size:clamp(38px, 7vw, 74px);
+    line-height:1.05; letter-spacing:-1px;
+    margin-bottom:18px;
+  }
+  .cursor{ display:inline-block; width:0.5ch; background:var(--accent); animation:blink 1s step-end infinite; }
+  @keyframes blink{ 50%{ opacity:0; } }
+  .role{
+    font-family:var(--sans); font-weight:600; font-size:clamp(18px,2.6vw,26px);
+    color:var(--text-dim); max-width:640px; margin-bottom:22px;
+  }
+  .tagline{ max-width:560px; color:var(--text-dim); font-size:15.5px; margin-bottom:34px; }
+  .cta-row{ display:flex; gap:14px; flex-wrap:wrap; }
+  .btn{
+    font-family:var(--mono); font-size:13px; font-weight:600;
+    padding:13px 22px; border-radius:6px; border:1px solid var(--line);
+    display:inline-flex; align-items:center; gap:8px; transition:all .18s ease;
+  }
+  .btn-primary{ background:var(--accent); color:#1a1200; border-color:var(--accent); }
+  .btn-primary:hover{ transform:translateY(-2px); box-shadow:0 8px 22px -8px rgba(242,169,59,0.55); }
+  .btn-ghost{ color:var(--text); }
+  .btn-ghost:hover{ border-color:var(--accent); color:var(--accent); }
+
+  .scan-note{
+    margin-top:56px; font-family:var(--mono); font-size:11px; color:var(--text-faint);
+    border-top:1px solid var(--line-soft); padding-top:16px; display:flex; gap:24px; flex-wrap:wrap;
+  }
+  .scan-note b{ color:var(--text-dim); font-weight:600; }
+
+  /* ---------- section shell ---------- */
+  section{ padding:90px 0; border-top:1px solid var(--line-soft); position:relative; }
+  .sec-head{ display:flex; align-items:baseline; gap:14px; margin-bottom:42px; flex-wrap:wrap; }
+  .sec-prompt{ font-family:var(--mono); font-size:13px; color:var(--text-faint); }
+  .sec-title{ font-family:var(--mono); font-size:26px; font-weight:700; }
+  .sec-title::before{ content:'# '; color:var(--accent); }
+
+  /* ---------- about ---------- */
+  .about-grid{ display:grid; grid-template-columns:1.4fr 1fr; gap:48px; }
+  @media (max-width:800px){ .about-grid{ grid-template-columns:1fr; } }
+  .about-text p{ color:var(--text-dim); font-size:15.5px; margin-bottom:16px; max-width:56ch; }
+  .about-text p b{ color:var(--text); font-weight:600; }
+  .info-card{
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:10px; padding:22px;
+    font-family:var(--mono); font-size:13px;
+  }
+  .info-row{ display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--line-soft); gap:12px; }
+  .info-row:last-child{ border-bottom:none; }
+  .info-row span:first-child{ color:var(--text-faint); }
+  .info-row span:last-child{ color:var(--text); text-align:right; }
+
+  /* ---------- skills ---------- */
+  .skill-groups{ display:grid; grid-template-columns:repeat(2, 1fr); gap:28px 48px; }
+  @media (max-width:700px){ .skill-groups{ grid-template-columns:1fr; } }
+  .skill-group-title{ font-family:var(--mono); font-size:12px; color:var(--accent); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:12px; }
+  .chip-row{ display:flex; flex-wrap:wrap; gap:8px; }
+  .chip{
+    font-family:var(--mono); font-size:12.5px; padding:6px 12px; border-radius:5px;
+    border:1px solid var(--line); color:var(--text-dim); background:var(--bg-panel);
+  }
+
+  /* ---------- experience / education timeline ---------- */
+  .tl-item{ display:grid; grid-template-columns:150px 1fr; gap:24px; padding:22px 0; border-bottom:1px solid var(--line-soft); }
+  .tl-item:last-child{ border-bottom:none; }
+  @media (max-width:640px){ .tl-item{ grid-template-columns:1fr; gap:6px; } }
+  .tl-date{ font-family:var(--mono); font-size:12px; color:var(--text-faint); }
+  .tl-role{ font-weight:700; font-size:16.5px; margin-bottom:4px; }
+  .tl-org{ color:var(--accent); font-size:13.5px; font-family:var(--mono); margin-bottom:8px; }
+  .tl-desc{ color:var(--text-dim); font-size:14.5px; max-width:60ch; }
+  .tl-desc li{ margin-left:18px; margin-bottom:4px; }
+
+  /* ---------- projects ---------- */
+  .proj-grid{ display:grid; grid-template-columns:repeat(2, 1fr); gap:20px; }
+  @media (max-width:760px){ .proj-grid{ grid-template-columns:1fr; } }
+  .proj-card{
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:10px;
+    padding:22px; display:flex; flex-direction:column; gap:12px; transition:border-color .2s ease, transform .2s ease;
+  }
+  .proj-card:hover{ border-color:var(--accent); transform:translateY(-3px); }
+  .proj-card.featured{ grid-column:1 / -1; background:var(--bg-panel-2); }
+  .proj-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+  .proj-name{ font-weight:700; font-size:17px; }
+  .badge{
+    font-family:var(--mono); font-size:10.5px; padding:4px 9px; border-radius:20px;
+    white-space:nowrap; letter-spacing:0.4px;
+  }
+  .badge-ok{ background:var(--ok-soft); color:var(--ok); border:1px solid rgba(87,179,108,0.3); }
+  .badge-accent{ background:var(--accent-soft); color:var(--accent); border:1px solid rgba(242,169,59,0.3); }
+  .proj-desc{ color:var(--text-dim); font-size:14px; flex-grow:1; }
+  .proj-stack{ display:flex; flex-wrap:wrap; gap:6px; }
+  .tag{ font-family:var(--mono); font-size:11px; color:var(--text-faint); border:1px solid var(--line); padding:3px 8px; border-radius:4px; }
+  .proj-link{ font-family:var(--mono); font-size:12.5px; color:var(--accent); display:inline-flex; align-items:center; gap:6px; margin-top:4px; }
+  .proj-link:hover{ text-decoration:underline; }
+  .proj-stats{ display:flex; gap:18px; font-family:var(--mono); font-size:12px; color:var(--text-dim); margin-top:2px; }
+  .proj-stats b{ color:var(--text); }
+
+  /* ---------- contact / footer ---------- */
+  .contact-box{
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:12px;
+    padding:44px; text-align:center;
+  }
+  .contact-box h3{ font-family:var(--mono); font-size:24px; margin-bottom:12px; }
+  .contact-box p{ color:var(--text-dim); max-width:50ch; margin:0 auto 26px; }
+  .contact-links{ display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+  footer{ text-align:center; padding:36px 0 60px; font-family:var(--mono); font-size:12px; color:var(--text-faint); }
+
+  /* reveal animation */
+  .reveal{ opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease; }
+  .reveal.show{ opacity:1; transform:translateY(0); }
+
+  @media (prefers-reduced-motion: reduce){
+    .reveal{ opacity:1; transform:none; transition:none; }
+    .dot, .cursor{ animation:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<!-- ============================================================
+     ALL EDITABLE CONTENT LIVES IN ONE JS OBJECT NEAR THE BOTTOM
+     OF THIS FILE — search for "EDIT YOUR INFO HERE".
+     You do not need to touch the HTML/CSS to update your info.
+     ============================================================ -->
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">wajiha<span>.</span>batool</div>
+    <nav class="nav">
+      <a href="#about">about</a>
+      <a href="#skills">skills</a>
+      <a href="#experience">experience</a>
+      <a href="#projects">projects</a>
+      <a href="#contact">contact</a>
+    </nav>
+    <div class="status-pill"><span class="dot"></span>OPEN TO WORK</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <section class="hero" id="hero">
+    <div class="eyebrow">whoami</div>
+    <h1 class="name" id="heroName"></h1>
+    <div class="role" id="heroRole"></div>
+    <p class="tagline" id="heroTagline"></p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="#projects">View projects →</a>
+      <a class="btn btn-ghost" id="heroResume" href="#" target="_blank">Download Resume ↓</a>
+      <a class="btn btn-ghost" id="heroGithub" href="#" target="_blank">GitHub</a>
+      <a class="btn btn-ghost" id="heroLinkedin" href="#" target="_blank">LinkedIn</a>
+    </div>
+    <div class="scan-note" id="heroFacts"></div>
+  </section>
+
+  <section id="about">
+    <div class="sec-head"><span class="sec-prompt">cat</span><span class="sec-title">about</span></div>
+    <div class="about-grid">
+      <div class="about-text reveal" id="aboutText"></div>
+      <div class="info-card reveal" id="aboutInfo"></div>
+    </div>
+  </section>
+
+  <section id="skills">
+    <div class="sec-head"><span class="sec-prompt">ls</span><span class="sec-title">skills</span></div>
+    <div class="skill-groups" id="skillGroups"></div>
+  </section>
+
+  <section id="experience">
+    <div class="sec-head"><span class="sec-prompt">log</span><span class="sec-title">experience</span></div>
+    <div id="experienceList"></div>
+  </section>
+
+  <section id="education">
+    <div class="sec-head"><span class="sec-prompt">log</span><span class="sec-title">education</span></div>
+    <div id="educationList"></div>
+  </section>
+
+  <section id="projects">
+    <div class="sec-head"><span class="sec-prompt">ls -la</span><span class="sec-title">projects</span></div>
+    <div class="proj-grid" id="projectGrid"></div>
+  </section>
+
+  <section id="contact">
+    <div class="contact-box reveal">
+      <h3 id="contactHeadline"></h3>
+      <p id="contactSub"></p>
+      <div class="contact-links" id="contactLinks"></div>
+    </div>
+  </section>
+
+  <footer id="footerText"></footer>
+
+</div>
+
+<script>
+/* ================================================================
+   EDIT YOUR INFO HERE
+   ----------------------------------------------------------------
+   Everything on the page is generated from this single object.
+   Change any text, add/remove projects, skills, or timeline
+   entries below — the page updates automatically. No HTML/CSS
+   editing required. Save the file and reopen it in your browser
+   to see changes.
+   ================================================================ */
+const PORTFOLIO_DATA = {
+
+  name: "Wajiha Batool",
+  role: "BSCS Student · AI, Data Science & Cybersecurity",
+  tagline: "I build practical, secure, and intelligent software — from ML-based phishing detectors to encrypted medical record systems — with a focus on solutions relevant to Pakistan and beyond.",
+
+  links: {
+    github: "https://github.com/Wajiha-Batool5",
+    linkedin: "https://www.linkedin.com/in/wajiha-batool-743862316/",
+    email: "wajihabatool191@gmail.com",
+    // Put your resume PDF in the SAME FOLDER as this HTML file and
+    // name it exactly "resume.pdf" — the button below will pick it up
+    // automatically. If you name it something else, change the path here.
+    resume: "resume.pdf"
+  },
+
+  heroFacts: [
+    { label: "Based in", value: "Islamabad, Pakistan" },
+    { label: "Focus", value: "AI · ML · Security · Data Science" },
+    { label: "Status", value: "Available for internships & collaboration" }
+  ],
+
+  about: {
+    paragraphs: [
+      "I'm a <b>final-year BSCS student</b> exploring the intersection of artificial intelligence, data science, and cybersecurity — turning ideas into functional, user-friendly applications.",
+      "My recent work includes <b>CyberShield</b>, a machine-learning phishing detector, alongside projects in encrypted medical record sharing, insider-threat detection, and network security tooling.",
+      "I'm currently preparing my <b>Final Year Project (2026–2027)</b> and looking for opportunities in NLP, edtech, fintech, and healthcare AI — with an interest in solutions for both the Pakistani and international markets."
+    ],
+    info: [
+      { label: "Location", value: "Islamabad, Pakistan" },
+      { label: "Degree", value: "BS Computer Science" },
+      { label: "Interests", value: "AI / ML / NLP / Security" },
+      { label: "FYP", value: "Planned 2026–2027" },
+      { label: "Email", value: "wajihabatool191@gmail.com" }
+    ]
+  },
+
+  skills: [
+    {
+      group: "Languages",
+      items: ["Python", "Java", "C", "C++", "JavaScript", "SQL"]
+    },
+    {
+      group: "Frameworks & Tools",
+      items: ["Flask", "Qt", "Node.js", "Git", "MySQL", "MongoDB"]
+    },
+    {
+      group: "Data / ML",
+      items: ["Scikit-learn", "TensorFlow", "Pandas", "Seaborn", "TF-IDF", "NLP"]
+    },
+    {
+      group: "Security",
+      items: ["Encryption (Fernet)", "Anomaly Detection", "Network Analysis (Scapy)"]
+    }
+  ],
+
+  experience: [
+    {
+      date: "2025 — Present",
+      role: "Data Science Intern",
+      org: "Digital Empowerment Network (DEN)",
+      points: [
+        "Working on data-driven and applied ML tasks as part of a nonprofit-tech initiative.",
+        "Contributing to real-world data science workflows alongside coursework."
+      ]
+    }
+  ],
+
+  education: [
+    {
+      date: "2022 — 2026",
+      role: "BS Computer Science",
+      org: "Final-year student",
+      points: [
+        "Relevant coursework: Advanced Database Systems, Computer Organization & Architecture, Theory of Automata.",
+        "Final Year Project (2026–2027) planned in AI, machine learning, and data science applications."
+      ]
+    }
+  ],
+
+  projects: [
+    {
+      name: "CyberShield — Phishing Email & URL Detector",
+      status: "Deployed",
+      statusType: "ok",
+      description: "A Flask web app that classifies phishing emails using TF-IDF + LinearSVC, alongside a rule-based URL risk analyzer.",
+      stack: ["Python", "Flask", "TF-IDF", "LinearSVC", "scikit-learn"],
+      stats: [ { label: "Accuracy", value: "96.6%" }, { label: "Dataset", value: "~18,650 emails" } ],
+      link: "https://github.com/Wajiha-Batool5/CyberShield-Phishing-Email-Detector",
+      featured: true
+    },
+    {
+      name: "Secure Medical Record Sharing Using Encryption",
+      status: "Team Project",
+      statusType: "accent",
+      description: "A Python-based system for securely managing and sharing encrypted medical records, using blockchain for integrity and Fernet encryption for confidentiality.",
+      stack: ["Python", "Blockchain", "Fernet Encryption"],
+      link: "https://github.com/InfoSecurity-Project-Team/SecureMedicalRecordSharingUsingEncryption"
+    },
+    {
+      name: "EHR Insider Threat Detection",
+      status: "Complete",
+      statusType: "ok",
+      description: "A secure Electronic Health Record access system using OTP and fingerprint verification, with SVM-based anomaly detection to flag insider threats.",
+      stack: ["Python", "PyQt5", "MySQL", "SVM"],
+      link: "https://github.com/Wajiha-Batool5/EHR_InsiderThreat_Detection"
+    },
+    {
+      name: "Digital Password Lock System (Verilog HDL)",
+      status: "Complete",
+      statusType: "ok",
+      description: "A Mealy/Moore FSM-based serial sequence detector with synchronous RAM and admin-mode write protection, simulated in ModelSim.",
+      stack: ["Verilog", "FSM Design", "ModelSim"]
+    },
+    {
+      name: "Basic Network Sniffer",
+      status: "Complete",
+      statusType: "ok",
+      description: "A Python tool using Scapy to capture and analyze real-time network traffic — identifying TCP, UDP, and ICMP packets with IPs, ports, and protocols.",
+      stack: ["Python", "Scapy"],
+      link: "https://github.com/Wajiha-Batool5/CodeAlpha_Project_BasicNetworkSniffer"
+    },
+    {
+      name: "Language Translation Tool",
+      status: "Complete",
+      statusType: "ok",
+      description: "A translation tool using deep_translator and the Google Translate API, supporting auto-detection of source language and multiple target languages.",
+      stack: ["Python", "deep_translator"],
+      link: "https://github.com/Wajiha-Batool5/CodeAlpha_Project_LanguageTranslationTool"
+    },
+    {
+      name: "Library Management System",
+      status: "Complete",
+      statusType: "ok",
+      description: "A desktop Library Management System with MySQL integration for managing books, issuers, and transactions through a GUI.",
+      stack: ["Java", "MySQL", "NetBeans"],
+      link: "https://github.com/Wajiha-Batool5/libraryManagementSystem"
+    }
+  ],
+
+  contact: {
+    headline: "Let's build something.",
+    sub: "Open to internships, freelance projects, and collaboration — especially in NLP, edtech, fintech, and healthcare AI."
+  },
+
+  footer: "© 2026 Wajiha Batool — built with HTML, CSS & JS."
+};
+
+/* ================================================================
+   RENDER LOGIC — you shouldn't need to edit anything below this
+   line unless you want to change how the page is structured.
+   ================================================================ */
+const $ = (id) => document.getElementById(id);
+
+// Hero
+function typeInto(el, text, speed=42){
+  el.innerHTML = "";
+  let i = 0;
+  const cursor = document.createElement('span');
+  cursor.className = 'cursor';
+  cursor.textContent = '_';
+  function step(){
+    if(i <= text.length){
+      el.textContent = text.slice(0, i);
+      el.appendChild(cursor);
+      i++;
+      setTimeout(step, speed);
+    }
+  }
+  step();
+}
+typeInto($('heroName'), PORTFOLIO_DATA.name);
+$('heroRole').textContent = PORTFOLIO_DATA.role;
+$('heroTagline').textContent = PORTFOLIO_DATA.tagline;
+$('heroGithub').href = PORTFOLIO_DATA.links.github;
+$('heroLinkedin').href = PORTFOLIO_DATA.links.linkedin;
+$('heroResume').href = PORTFOLIO_DATA.links.resume;
+$('heroResume').setAttribute('download', '');
+$('heroFacts').innerHTML = PORTFOLIO_DATA.heroFacts
+  .map(f => `<div><b>${f.label}:</b> ${f.value}</div>`).join('');
+
+// About
+$('aboutText').innerHTML = PORTFOLIO_DATA.about.paragraphs.map(p => `<p>${p}</p>`).join('');
+$('aboutInfo').innerHTML = PORTFOLIO_DATA.about.info
+  .map(r => `<div class="info-row"><span>${r.label}</span><span>${r.value}</span></div>`).join('');
+
+// Skills
+$('skillGroups').innerHTML = PORTFOLIO_DATA.skills.map(g => `
+  <div>
+    <div class="skill-group-title">${g.group}</div>
+    <div class="chip-row">${g.items.map(i => `<span class="chip">${i}</span>`).join('')}</div>
+  </div>
+`).join('');
+
+// Experience & Education (shared renderer)
+function renderTimeline(list, containerId){
+  $(containerId).innerHTML = list.map(item => `
+    <div class="tl-item reveal">
+      <div class="tl-date">${item.date}</div>
+      <div>
+        <div class="tl-role">${item.role}</div>
+        <div class="tl-org">${item.org}</div>
+        <ul class="tl-desc">${item.points.map(p => `<li>${p}</li>`).join('')}</ul>
+      </div>
+    </div>
+  `).join('');
+}
+renderTimeline(PORTFOLIO_DATA.experience, 'experienceList');
+renderTimeline(PORTFOLIO_DATA.education, 'educationList');
+
+// Projects
+$('projectGrid').innerHTML = PORTFOLIO_DATA.projects.map(p => `
+  <div class="proj-card reveal ${p.featured ? 'featured' : ''}">
+    <div class="proj-top">
+      <div class="proj-name">${p.name}</div>
+      <span class="badge ${p.statusType === 'ok' ? 'badge-ok' : 'badge-accent'}">${p.status}</span>
+    </div>
+    <p class="proj-desc">${p.description}</p>
+    ${p.stats ? `<div class="proj-stats">${p.stats.map(s => `<span>${s.label}: <b>${s.value}</b></span>`).join('')}</div>` : ''}
+    <div class="proj-stack">${p.stack.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+    ${p.link ? `<a class="proj-link" href="${p.link}" target="_blank">View on GitHub →</a>` : ''}
+  </div>
+`).join('');
+
+// Contact
+$('contactHeadline').textContent = PORTFOLIO_DATA.contact.headline;
+$('contactSub').textContent = PORTFOLIO_DATA.contact.sub;
+$('contactLinks').innerHTML = `
+  <a class="btn btn-primary" href="mailto:${PORTFOLIO_DATA.links.email}">Email me</a>
+  <a class="btn btn-ghost" href="${PORTFOLIO_DATA.links.github}" target="_blank">GitHub</a>
+  <a class="btn btn-ghost" href="${PORTFOLIO_DATA.links.linkedin}" target="_blank">LinkedIn</a>
+`;
+$('footerText').textContent = PORTFOLIO_DATA.footer;
+
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('show'); });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
